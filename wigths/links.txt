@@ -1,0 +1,2 @@
+vgg16_MSE https://drive.google.com/uc?id=1s2PwsWJNCyTuPnTXLqik5X4bk65ezxNr
+vgg19_MSE https://drive.google.com/uc?id=1kHoYRoJhx8WR1lPHgxYdX8vOt-VIOO4b

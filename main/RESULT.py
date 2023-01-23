@@ -18,26 +18,37 @@ def pred(loader, model, return_file_names=cfg.return_file_name):
             pred = "floor" if pred==[1,0,0] else "ship" if pred==[0,1,0] else "plane"
             res.append(pred)
     if return_file_names:
-        df = pd.DataFrame(data=[res, file_names], columns=["Class", "file_names"])
+        df = pd.DataFrame({"Class":res, "file_names":img_list})
     else:
         df = pd.DataFrame(data=res, columns=["Class"])
     df.to_csv(cfg.output_path+cfg.output_name, index="Id")
     
 
 def get_data():
-    img_list = os.listdir(cfg.input_path)
+    global img_list
+    img_list = os.listdir(input_path)[:10]
     img_list = sorted(img_list, key=lambda x: int(x[:-4]))
 
     input_list = []
     for img_name in tqdm(img_list, desc="loading images"):
-        input_list.append([np.asarray(Image.open(cfg.input_path + img_name)) for i in range(3)])
+        input_list.append([np.asarray(Image.open(input_path + img_name)) for i in range(3)])
 
-    input_list = np.array(input_list)
+
+    input_list = np.asarray(input_list)
 
     global loader
     tens_input = torch.FloatTensor(input_list)/255
     tens_input.to(device)
     loader = DataLoader(tens_input)
+
+if cfg.input_path == '':
+    d = os.path.dirname(__file__)
+    input_path = os.path.join(d[:d.rfind('/')], "test_imgs/")
+else:
+    input_path = cfg.input_path
+
+d = os.path.dirname(__file__)
+model_wigth = os.path.join(d[:d.rfind('/')], f"wigths/{cfg.model_wigth}")
 
 
 if cfg.device == "none":
@@ -46,8 +57,16 @@ else:
     device = cfg.device
 
 model = cfg.model(num_classes=3)
-model.load_state_dict(torch.load(cfg.model_wigth,map_location=torch.device('cpu')))
+if device == "cpu":
+    model.load_state_dict(torch.load(model_wigth,map_location=torch.device('cpu')))
+else:
+    model.load_state_dict(torch.load(model_wigth))
 model.eval()
+
+
+
+
+
 
 get_data()
 pred(loader, model)

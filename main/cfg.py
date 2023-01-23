@@ -1,9 +1,11 @@
 import torchvision
-input_path = "./new_test/"
+
+input_path = ""
+print(input_path)
 output_path = ""
 output_name = "sub.csv"
 device = "none"
-return_file_name = False
+return_file_name = True
 
 model = torchvision.models.vgg19
-model_wigth = "./wigths/vgg19_MSE.pth"
+model_wigth = "vgg19_MSE.pth"
